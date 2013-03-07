@@ -1,5 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:grok="http://namespaces.zope.org/grok"
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
@@ -17,5 +18,16 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
   <!-- -*- extra stuff goes here -*- -->
+  
+  <browser:page
+        name="asking_for_account"
+        for="Products.CMFPlone.interfaces.siteroot.IPloneSiteRoot"
+        class=".askingforaccount.ReCaptchaForm"
+        permission = "zope.Public" />
+
+  <adapter
+        for="Products.CMFPlone.interfaces.siteroot.IPloneSiteRoot"
+        provides=".askingforaccount.IReCaptchaForm"
+        factory=".askingforaccount.ReCaptcha" />
 
 </configure>
