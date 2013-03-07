@@ -93,9 +93,9 @@ class ReCaptcha(object):
         self.context = context
 
 class BaseForm(form.Form):
-  
 
 
+    enableCSRFProtection = True
     """ example captcha form """
     fields = field.Fields(IReCaptchaForm)
     fields['captcha'].widgetFactory = ReCaptchaFieldWidget
@@ -139,7 +139,7 @@ class BaseForm(form.Form):
             print 'The code you entered was wrong, please enter the new one.'
         return
 
-       
+
 
 
     @button.buttonAndHandler(_(u"Cancel"))
