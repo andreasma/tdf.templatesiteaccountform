@@ -84,7 +84,7 @@ class IReCaptchaForm(interface.Interface):
 
     captcha = schema.TextLine(title=u"ReCaptcha",
                               description=u"",
-                              required=False)
+                              required=True)
 
 class ReCaptcha(object):
     subject = u""
