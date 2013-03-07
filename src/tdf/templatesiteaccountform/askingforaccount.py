@@ -84,7 +84,7 @@ class IReCaptchaForm(interface.Interface):
 
     captcha = schema.TextLine(title=u"ReCaptcha",
                               description=u"",
-                              required=True)
+                              required=False)
 
 class ReCaptcha(object):
     subject = u""
@@ -108,14 +108,13 @@ class BaseForm(form.Form):
         """
 
         data, errors = self.extractData()
-        if errors:
-            self.status = self.formErrorsMessage
-            captcha = getMultiAdapter((aq_inner(self.context), self.request), name='recaptcha')
-            if captcha.verify():
-                print 'ReCaptcha validation passed.'
-            else:
-                print 'The code you entered was wrong, please enter the new one.'
-            return
+
+        captcha = getMultiAdapter((aq_inner(self.context), self.request), name='recaptcha')
+        if captcha.verify():
+            print 'ReCaptcha validation passed.'
+        else:
+            print 'The code you entered was wrong, please enter the new one.'
+        return
 
         mailhost = getToolByName(self.context, 'MailHost')
         urltool = getToolByName(self.context, 'portal_url')
