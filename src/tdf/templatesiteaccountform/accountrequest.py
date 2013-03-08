@@ -138,33 +138,33 @@ class TemplatesiteaccountForm(form.Form):
 
         data, errors = self.extractData()
 
-            captcha = getMultiAdapter((aq_inner(self.context), self.request), name='recaptcha')
-            if captcha.verify():
-                print 'ReCaptcha validation passed.'
-                mailhost = getToolByName(self.context, 'MailHost')
-                urltool = getToolByName(self.context, 'portal_url')
+        captcha = getMultiAdapter((aq_inner(self.context), self.request), name='recaptcha')
+        if captcha.verify():
+            print 'ReCaptcha validation passed.'
+            mailhost = getToolByName(self.context, 'MailHost')
+            urltool = getToolByName(self.context, 'portal_url')
 
-                portal = urltool.getPortalObject()
+            portal = urltool.getPortalObject()
 
-                # Construct and send a message
-                toAddress = portal.getProperty('email_from_address')
-                source = "%s <%s>" % ('Asking for an Account on the template site', 'templates@otrs.documentfoundation.org')
-                subject = "%s %s" % (data['firstname'], data['name'])
-                message = MESSAGE_TEMPLATE % data
+            # Construct and send a message
+            toAddress = portal.getProperty('email_from_address')
+            source = "%s <%s>" % ('Asking for an Account on the template site', 'templates@otrs.documentfoundation.org')
+            subject = "%s %s" % (data['firstname'], data['name'])
+            message = MESSAGE_TEMPLATE % data
 
-                mailhost.send(message, mto=toAddress, mfrom=str(source), subject=subject, charset='utf8')
+            mailhost.send(message, mto=toAddress, mfrom=str(source), subject=subject, charset='utf8')
 
-                # Issue a status message
-                confirm = _(u"Thank you! Your request for an account has been received and we will create an account. You will get an email with a link to activate your account and reset the password.")
-                IStatusMessage(self.request).add(confirm, type='info')
+            # Issue a status message
+            confirm = _(u"Thank you! Your request for an account has been received and we will create an account. You will get an email with a link to activate your account and reset the password.")
+            IStatusMessage(self.request).add(confirm, type='info')
 
-                # Redirect to the portal front page. Return an empty string as the
-                # page body - we are redirecting anyway!
-                self.request.response.redirect(portal.absolute_url())
-                return ''
-            else:
-                print 'The code you entered was wrong, please enter the new one.'
-            return
+            # Redirect to the portal front page. Return an empty string as the
+            # page body - we are redirecting anyway!
+            self.request.response.redirect(portal.absolute_url())
+            return ''
+        else:
+            print 'The code you entered was wrong, please enter the new one.'
+        return
 
 
 
