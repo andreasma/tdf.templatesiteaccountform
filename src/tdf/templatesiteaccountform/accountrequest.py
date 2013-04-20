@@ -67,6 +67,15 @@ class ITemplateaccountForm(Interface):
         required=False,
         )
 
+
+    explanation=schema.Text(
+        title=_(u"Important Information: Please read before you continue"),
+        description=_(u"If you only want to download a template you don't need to ask for an account on this site. An Account is only necessary, if you have already created a template for LibreOffice and want to publish it here. In that case we look forward to the description of your project in the field below. If you don't provide a description or once you get an account will not upload a free licensed template we will delete your account without warning within two weeks!!"),
+        readonly=True,
+        required=False,
+        )
+
+
     name = schema.TextLine(
         title=_(u"Lastname"),
         )
@@ -96,9 +105,10 @@ class ITemplateaccountForm(Interface):
 
     message = schema.Text(
         title=_(u"Short Description of Your Template Project"),
-        description=_(u"Please keep to 1,000 characters"),
+        description=_(u"Please keep from 50 to 1,000 characters"),
+        min_length=50,
         max_length=1000,
-        required=False,
+        required=True,
         )
 
     captcha = schema.TextLine(
