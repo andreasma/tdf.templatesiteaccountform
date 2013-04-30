@@ -60,17 +60,17 @@ class ITemplateaccountForm(Interface):
 
 
 
-    requestofaccount= schema.Text(
-        title =_(u"Request for an account on the LibreOffice Templates Site: http://templates.libreoffice.org"),
-        description=_(u"(If you created a template for LibreOffice and want to publish it on the LibreOffice Templates Site you could ask for an account on the site. Please tell us in the field below a bit about your template project.)"),
+    explanation=schema.Text(
+        title=_(u"Important Information: Please read before you continue"),
+        description=_(u"To download a template you don't need an account on this site. An Account is only necessary to upload a template for LibreOffice. In that case we fill in the form fields below. You had to provide a description for your free licensed template project and upload the template after you get the credentials. Otherwise we will delete your account and project without warning within two weeks!!"),
         readonly=True,
         required=False,
         )
 
 
-    explanation=schema.Text(
-        title=_(u"Important Information: Please read before you continue"),
-        description=_(u"If you only want to download a template you don't need to ask for an account on this site. An Account is only necessary, if you have already created a template for LibreOffice and want to publish it here. In that case we look forward to the description of your project in the field below. If you don't provide a description or once you get an account will not upload a free licensed template we will delete your account without warning within two weeks!!"),
+    requestofaccount= schema.Text(
+        title =_(u"Hosting your Template on the LibreOffice Templates Site: http://templates.libreoffice.org"),
+        description=_(u"(If you created a template for LibreOffice and want to publish it on the LibreOffice Templates Site you could ask for an account on the site. Please tell us in the field below a bit about your template project.)"),
         readonly=True,
         required=False,
         )
@@ -121,7 +121,7 @@ class TemplatesiteaccountForm(form.Form):
 
 
     grok.context(ISiteRoot)
-    grok.name('ask-for-an-templatesiteaccount')
+    grok.name('hosting-your-template')
     grok.require('zope2.View')
 
     enableCSRFProtection = True
@@ -129,7 +129,7 @@ class TemplatesiteaccountForm(form.Form):
     fields = field.Fields(ITemplateaccountForm)
     fields['captcha'].widgetFactory = ReCaptchaFieldWidget
 
-    label = _(u"Ask for an Account")
+    label = _(u"Host your Template(s)")
     description = _(u"Please give us a short description of your template project.")
 
     ignoreContext = True
