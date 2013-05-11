@@ -70,7 +70,7 @@ class ITemplateaccountForm(Interface):
 
     requestofaccount= schema.Text(
         title =_(u"Hosting your Template on the LibreOffice Templates Site: http://templates.libreoffice.org"),
-        description=_(u"(Submit the form below in case you created a LibreOffice template and want to publish it at the LibreOffice Templates Site."),
+        description=_(u"Submit the form below in case you created a LibreOffice template and want to publish it at the LibreOffice Templates Site."),
         readonly=True,
         required=False,
         )
@@ -135,7 +135,7 @@ class TemplatesiteaccountForm(form.Form):
     fields = field.Fields(ITemplateaccountForm)
     fields['captcha'].widgetFactory = ReCaptchaFieldWidget
 
-    label = _(u"Host your Template(s)")
+    label = _(u"Hosting your Template(s)")
     description = _(u"Please leave a short description of your template project below.")
 
     ignoreContext = True
