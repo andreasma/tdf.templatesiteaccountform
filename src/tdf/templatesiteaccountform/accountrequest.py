@@ -61,8 +61,8 @@ class ITemplateaccountForm(Interface):
 
 
     explanation=schema.Text(
-        title=_(u"Important Information: Please read before you continue"),
-        description=_(u"To download a template you don't need an account on this site. An Account is only necessary to upload a template for LibreOffice. In that case we fill in the form fields below. You had to provide a description for your free licensed template project and upload the template after you get the credentials. Otherwise we will delete your account and project without warning within two weeks!!"),
+        title=_(u"Important Information:"),
+        description=_(u"You do not need an account to download templates from http://templates.libreoffice.org!"),
         readonly=True,
         required=False,
         )
@@ -70,10 +70,16 @@ class ITemplateaccountForm(Interface):
 
     requestofaccount= schema.Text(
         title =_(u"Hosting your Template on the LibreOffice Templates Site: http://templates.libreoffice.org"),
-        description=_(u"(If you created a template for LibreOffice and want to publish it on the LibreOffice Templates Site you could ask for an account on the site. Please tell us in the field below a bit about your template project.)"),
+        description=_(u"(Submit the form below in case you created a LibreOffice template and want to publish it at the LibreOffice Templates Site."),
         readonly=True,
         required=False,
         )
+
+    infofirsttemplateuploadtiming = schema.Text(
+        title =_(u"Please upload your template after you have received the credentials. Projects without files will be deleted after two weeks without further notice!"),
+        readonly=True,
+        required=False,
+    )
 
 
     name = schema.TextLine(
@@ -87,7 +93,7 @@ class ITemplateaccountForm(Interface):
 
     preferedusername = schema.ASCIILine(
         title=_(u"User Name (5 - 15 ASCII characters)"),
-        description=_(u"If we should create a special user name please write it down. In case your preferred username is already taken we will add numbers to your suggestion. "),
+        description=_(u"Please suggest your desired username. In case your preferred username is already taken we will add numbers to your suggestion. "),
         min_length=5,
         max_length=15,
         required=False,
@@ -130,7 +136,7 @@ class TemplatesiteaccountForm(form.Form):
     fields['captcha'].widgetFactory = ReCaptchaFieldWidget
 
     label = _(u"Host your Template(s)")
-    description = _(u"Please give us a short description of your template project.")
+    description = _(u"Please leave a short description of your template project below.")
 
     ignoreContext = True
 
