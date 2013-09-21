@@ -13,6 +13,7 @@ src/tdf.templatesiteaccountform.egg-info/requires.txt
 src/tdf.templatesiteaccountform.egg-info/top_level.txt
 src/tdf/templatesiteaccountform/__init__.py
 src/tdf/templatesiteaccountform/accountrequest.py
+src/tdf/templatesiteaccountform/askingforaccount.py
 src/tdf/templatesiteaccountform/testing.py
 src/tdf/templatesiteaccountform/tests/__init__.py
 src/tdf/templatesiteaccountform/tests/test_example.py

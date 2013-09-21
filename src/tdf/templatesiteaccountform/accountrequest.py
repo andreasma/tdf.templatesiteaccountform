@@ -40,7 +40,7 @@ def validateEmail(value):
 
 MESSAGE_TEMPLATE = """\
 
-Account Request from %(firstname)s  %(name)s <%(emailAddress)s> for LibreOffice Templates site
+Account Request from %(firstname)s %(name)s <%(emailAddress)s> for LibreOffice Templates site
 
 Firstname: %(firstname)s
 Name: %(name)s
