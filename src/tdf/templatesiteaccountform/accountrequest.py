@@ -153,6 +153,9 @@ class TemplatesiteaccountForm(form.Form):
         """
 
         data, errors = self.extractData()
+        if errors:
+            self.status = self.formErrorsMessage
+            return
 
         captcha = getMultiAdapter((aq_inner(self.context), self.request), name='recaptcha')
         if captcha.verify():
