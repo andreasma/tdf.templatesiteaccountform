@@ -111,7 +111,7 @@ class ITemplateaccountForm(Interface):
 
     message = schema.Text(
         title=_(u"Short Description of Your Template Project"),
-        description=_(u"Please keep from 50 to 1,000 characters"),
+        description=_(u"Please keep between 50 to 1,000 characters"),
         min_length=50,
         max_length=1000,
         required=True,
