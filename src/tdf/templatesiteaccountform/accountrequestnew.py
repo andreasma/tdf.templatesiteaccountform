@@ -18,14 +18,9 @@ from z3c.form.browser.radio import RadioFieldWidget
 
 from zope.component import getMultiAdapter
 from Acquisition import aq_inner
-from plone.formwidget.recaptcha.widget import ReCaptchaFieldWidget
 
-
-class ReCaptcha(object):
-    subject = u""
-    captcha = u""
-    def __init__(self, context):
-        self.context = context
+from collective.z3cform.norobots.widget import NorobotsFieldWidget
+from collective.z3cform.norobots.validator import NorobotsValidator
 
 
 checkEmail = re.compile(
@@ -54,10 +49,7 @@ Prefered Username: %(preferedusername)s
 
 
 
-class ITemplateaccountForm(Interface):
-    """Define the fields of our form
-    """
-
+class ITemplateaccountForm2(Interface):
 
 
     explanation=schema.Text(
@@ -117,23 +109,23 @@ class ITemplateaccountForm(Interface):
         required=True,
         )
 
-    captcha = schema.TextLine(
-        title=_(u"ReCaptcha"),
-        description=_(u""),
-        required=False
-    )
 
-class TemplatesiteaccountForm(form.Form):
+    norobots = schema.TextLine(title=_(u'Are you a human ?'),
+                               description=_(u'In order to avoid spam, please answer the question below.'),
+                               required=True)
+
+class TemplatesiteaccountForm2(form.Form):
 
 
     grok.context(ISiteRoot)
-    grok.name('hosting-your-template2')
+    grok.name('hosting-your-template')
     grok.require('zope2.View')
 
     enableCSRFProtection = True
 
-    fields = field.Fields(ITemplateaccountForm)
-    fields['captcha'].widgetFactory = ReCaptchaFieldWidget
+    fields = field.Fields(ITemplateaccountForm2)
+    fields['norobots'].widgetFactory = NorobotsFieldWidget
+
 
     label = _(u"Hosting your Template(s)")
     description = _(u"Please leave a short description of your template project below.")
@@ -144,7 +136,9 @@ class TemplatesiteaccountForm(form.Form):
     # Hide the editable border and tabs
     def update(self):
         self.request.set('disable_border', True)
-        return super(TemplatesiteaccountForm, self).update()
+        return super(TemplatesiteaccountForm2, self).update()
+
+
 
     @button.buttonAndHandler(_(u"Send"))
     def sendMail(self, action):
@@ -157,33 +151,29 @@ class TemplatesiteaccountForm(form.Form):
             self.status = self.formErrorsMessage
             return
 
-        captcha = getMultiAdapter((aq_inner(self.context), self.request), name='recaptcha')
-        if captcha.verify():
-            print 'ReCaptcha validation passed.'
-            mailhost = getToolByName(self.context, 'MailHost')
-            urltool = getToolByName(self.context, 'portal_url')
+        mailhost = getToolByName(self.context, 'MailHost')
+        urltool = getToolByName(self.context, 'portal_url')
 
-            portal = urltool.getPortalObject()
+        portal = urltool.getPortalObject()
 
-            # Construct and send a message
-            toAddress = portal.getProperty('email_from_address')
-            source = "%s <%s>" % ('Asking for an Account on the template site', 'templates@otrs.documentfoundation.org')
-            subject = "%s %s" % (data['firstname'], data['name'])
-            message = MESSAGE_TEMPLATE % data
+        # Construct and send a message
+        toAddress = portal.getProperty('email_from_address')
+        source = "%s <%s>" % ('Asking for an Account on the template site', 'templates@otrs.documentfoundation.org')
+        subject = "%s %s" % (data['firstname'], data['name'])
+        message = MESSAGE_TEMPLATE % data
 
-            mailhost.send(message, mto=toAddress, mfrom=str(source), subject=subject, charset='utf8')
+        mailhost.send(message, mto=toAddress, mfrom=str(source), subject=subject, charset='utf8')
 
-            # Issue a status message
-            confirm = _(u"Thank you! Your request for an account has been received and we will create an account. You will get an email with a link to activate your account and reset the password.")
-            IStatusMessage(self.request).add(confirm, type='info')
+        # Issue a status message
+        confirm = _(u"Thank you! Your request for an account has been received and we will create an account. You will get an email with a link to activate your account and reset the password.")
+        IStatusMessage(self.request).add(confirm, type='info')
 
             # Redirect to the portal front page. Return an empty string as the
             # page body - we are redirecting anyway!
-            self.request.response.redirect(portal.absolute_url())
-            return ''
-        else:
-            print 'The code you entered was wrong, please enter the new one.'
-        return
+        self.request.response.redirect(portal.absolute_url())
+        return ''
+
+
 
 
 

@@ -4,7 +4,7 @@
 
     <object name="site_actions">
 
-        <object name="accountrequest" meta_type="CMF Action" i18n:domain="tdf.templatesiteaccountform">
+        <object name="accountrequestnew" meta_type="CMF Action" i18n:domain="tdf.templatesiteaccountform">
             <property name="title" i18n:translate="">Hosting your Template</property>
             <property name="description" i18n:translate=""></property>
             <property name="url_expr">string:$portal_url/@@hosting-your-template</property>
@@ -13,8 +13,7 @@
             <property name="permissions">
                 <element value="View"/>
             </property>
-            <property name="visible">True</property>
-
         </object>
+
     </object>
 </object>
