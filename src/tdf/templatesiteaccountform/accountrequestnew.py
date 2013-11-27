@@ -40,7 +40,7 @@ Account Request from %(firstname)s %(name)s <%(emailAddress)s> for LibreOffice T
 Firstname: %(firstname)s
 Name: %(name)s
 Email: %(emailAddress)s
-Prefered Username: %(preferedusername)s
+Preferred Username: %(preferredusername)s
 
 
 
@@ -83,7 +83,7 @@ class ITemplateaccountForm2(Interface):
         title=_(u"Firstname"),
         )
 
-    preferedusername = schema.ASCIILine(
+    preferredusername = schema.ASCIILine(
         title=_(u"User Name (5 - 15 ASCII characters)"),
         description=_(u"Please suggest your desired username. In case your preferred username is already taken, we will add numbers to your suggestion. "),
         min_length=5,
@@ -96,6 +96,13 @@ class ITemplateaccountForm2(Interface):
     emailAddress = schema.ASCIILine(
         title=_(u"Your Email Address (required)"),
         constraint=validateEmail
+    )
+
+
+    leaveblank = schema.ASCIILine(
+        title=_(u'Please leave empty'),
+        required=False,
+
     )
 
 
@@ -153,27 +160,38 @@ class TemplatesiteaccountForm2(form.Form):
             self.status = self.formErrorsMessage
             return
 
-        mailhost = getToolByName(self.context, 'MailHost')
-        urltool = getToolByName(self.context, 'portal_url')
+        elif 'leaveblank' in data and data['leaveblank']:
 
-        portal = urltool.getPortalObject()
+            urltool = getToolByName(self.context, 'portal_url')
+
+            portal = urltool.getPortalObject()
+
+            self.request.response.redirect(portal.absolute_url())
+            return
+
+        else:
+
+            mailhost = getToolByName(self.context, 'MailHost')
+            urltool = getToolByName(self.context, 'portal_url')
+
+            portal = urltool.getPortalObject()
 
         # Construct and send a message
-        toAddress = portal.getProperty('email_from_address')
-        source = "%s <%s>" % ('Asking for an Account on the template site', 'templates@otrs.documentfoundation.org')
-        subject = "%s %s" % (data['firstname'], data['name'])
-        message = MESSAGE_TEMPLATE % data
+            toAddress = portal.getProperty('email_from_address')
+            source = "%s <%s>" % ('Asking for an Account on the template site', 'templates@otrs.documentfoundation.org')
+            subject = "%s %s" % (data['firstname'], data['name'])
+            message = MESSAGE_TEMPLATE % data
 
-        mailhost.send(message, mto=toAddress, mfrom=str(source), subject=subject, charset='utf8')
+            mailhost.send(message, mto=toAddress, mfrom=str(source), subject=subject, charset='utf8')
 
         # Issue a status message
-        confirm = _(u"Thank you! Your request for an account has been received and we will create an account. You will get an email with a link to activate your account and reset the password.")
-        IStatusMessage(self.request).add(confirm, type='info')
+            confirm = _(u"Thank you! Your request for an account has been received and we will create an account. You will get an email with a link to activate your account and reset the password.")
+            IStatusMessage(self.request).add(confirm, type='info')
 
             # Redirect to the portal front page. Return an empty string as the
             # page body - we are redirecting anyway!
-        self.request.response.redirect(portal.absolute_url())
-        return ''
+            self.request.response.redirect(portal.absolute_url())
+            return ''
 
 
 
