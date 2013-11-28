@@ -98,7 +98,7 @@ class ITemplateaccountForm2(Interface):
         constraint=validateEmail
     )
 
-
+    form.mode(leaveblank='hidden')
     leaveblank = schema.ASCIILine(
         title=_(u'Please leave empty'),
         required=False,
@@ -116,12 +116,17 @@ class ITemplateaccountForm2(Interface):
         required=True,
         )
 
-
+    form.widget(norobots=NorobotsFieldWidget)
     norobots = schema.TextLine(title=_(u'Are you a human ?'),
                                description=_(u'In order to avoid spam, please answer the question below.'),
-                               required=True)
+                               required=True,)
 
-class TemplatesiteaccountForm2(form.Form):
+
+validator.WidgetValidatorDiscriminators(NorobotsValidator, field=ITemplateaccountForm2['norobots'])
+grok.global_adapter(NorobotsValidator)
+
+
+class TemplatesiteaccountForm2(form.SchemaForm):
 
 
     grok.context(ISiteRoot)
@@ -130,8 +135,10 @@ class TemplatesiteaccountForm2(form.Form):
 
     enableCSRFProtection = True
 
-    fields = field.Fields(ITemplateaccountForm2)
-    fields['norobots'].widgetFactory = NorobotsFieldWidget
+    schema=ITemplateaccountForm2
+
+
+
 
 
     label = _(u"Hosting your Template(s)")
@@ -139,7 +146,7 @@ class TemplatesiteaccountForm2(form.Form):
 
     ignoreContext = True
 
-    validator.WidgetValidatorDiscriminators(NorobotsValidator, field=ITemplateaccountForm2['norobots'])
+
 
 
     # Hide the editable border and tabs
