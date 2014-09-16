@@ -185,8 +185,8 @@ class TemplatesiteaccountForm2(form.SchemaForm):
 
         # Construct and send a message
             toAddress = portal.getProperty('email_from_address')
-            source = "%s <%s>" % ('Asking for an Account on the template site', 'templates@otrs.documentfoundation.org')
-            subject = "%s %s" % (data['firstname'], data['name'])
+            source = "%s" % (data['emailAddress'])
+            subject = "%s  %s %s" % ('Asking for an Account on the LibreOffice Templates Site from', data['firstname'], data['name'])
             message = MESSAGE_TEMPLATE % data
 
             mailhost.send(message, mto=toAddress, mfrom=str(source), subject=subject, charset='utf8')
