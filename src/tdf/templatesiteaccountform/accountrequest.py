@@ -135,7 +135,7 @@ class TemplatesiteaccountForm(form.Form):
     fields = field.Fields(ITemplateaccountForm)
     fields['captcha'].widgetFactory = ReCaptchaFieldWidget
 
-    label = _(u"Hosting your Template(s)")
+    label = _(u"Hosting your Template(s) (Registration)")
     description = _(u"Please leave a short description of your template project below.")
 
     ignoreContext = True
