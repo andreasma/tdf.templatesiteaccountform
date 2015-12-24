@@ -59,25 +59,25 @@ class ITemplateaccountForm(Interface):
     """
 
 
-
+    form.mode(explanation='display')
     explanation=schema.Text(
         title=_(u"Important Information:"),
         description=_(u"You do not need an account to download templates from http://templates.libreoffice.org!"),
-        readonly=True,
         required=False,
         )
 
 
+    form.mode(requestofaccount='display')
     requestofaccount= schema.Text(
         title =_(u"Hosting your Template on the LibreOffice Templates Site: http://templates.libreoffice.org"),
         description=_(u"Submit the form below in case you created a LibreOffice template and want to publish it at the LibreOffice Templates Site."),
-        readonly=True,
         required=False,
         )
 
+
+    form.mode(infofirsttemplateuploadtiming='display')
     infofirsttemplateuploadtiming = schema.Text(
         title =_(u"Please upload your template after you have received the credentials. Projects without files will be deleted after two weeks without further notice!"),
-        readonly=True,
         required=False,
     )
 
