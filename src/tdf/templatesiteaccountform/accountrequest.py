@@ -5,7 +5,7 @@ from plone.directives import form
 from zope.interface import Interface
 from zope.interface import Invalid
 from zope import schema
-from z3c.form import field, button
+from z3c.form import field, button, validator
 from Products.statusmessages.interfaces import IStatusMessage
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
@@ -18,14 +18,9 @@ from z3c.form.browser.radio import RadioFieldWidget
 
 from zope.component import getMultiAdapter
 from Acquisition import aq_inner
-from plone.formwidget.recaptcha.widget import ReCaptchaFieldWidget
 
-
-class ReCaptcha(object):
-    subject = u""
-    captcha = u""
-    def __init__(self, context):
-        self.context = context
+from collective.z3cform.norobots.widget import NorobotsFieldWidget
+from collective.z3cform.norobots.validator import NorobotsValidator
 
 
 checkEmail = re.compile(
@@ -45,7 +40,7 @@ Account Request from %(firstname)s %(name)s <%(emailAddress)s> for LibreOffice T
 Firstname: %(firstname)s
 Name: %(name)s
 Email: %(emailAddress)s
-Prefered Username: %(preferedusername)s
+Preferred Username: %(preferedusername)s
 
 
 
@@ -91,7 +86,7 @@ class ITemplateaccountForm(Interface):
         title=_(u"Firstname"),
         )
 
-    preferedusername = schema.ASCIILine(
+    preferredusername = schema.ASCIILine(
         title=_(u"User Name (5 - 15 ASCII characters)"),
         description=_(u"Please suggest your desired username. In case your preferred username is already taken, we will add numbers to your suggestion. "),
         min_length=5,
@@ -106,6 +101,13 @@ class ITemplateaccountForm(Interface):
         constraint=validateEmail
     )
 
+    form.mode(leaveblank='hidden')
+    leaveblank = schema.ASCIILine(
+        title=_(u'Please leave empty'),
+        required=False,
+
+    )
+
 
 
 
@@ -117,23 +119,26 @@ class ITemplateaccountForm(Interface):
         required=True,
         )
 
-    captcha = schema.TextLine(
-        title=_(u"ReCaptcha"),
-        description=_(u""),
-        required=False
-    )
+    form.widget(norobots=NorobotsFieldWidget)
+    norobots = schema.TextLine(title=_(u'Are you a human ?'),
+                               description=_(u'In order to avoid spam, please answer the question below.'),
+                               required=True,)
 
-class TemplatesiteaccountForm(form.Form):
+
+validator.WidgetValidatorDiscriminators(NorobotsValidator, field=ITemplateaccountForm['norobots'])
+grok.global_adapter(NorobotsValidator)
+
+
+class TemplatesiteaccountForm(form.SchemaForm):
 
 
     grok.context(ISiteRoot)
-    grok.name('hosting-your-template2')
+    grok.name('hosting-your-template')
     grok.require('zope2.View')
 
     enableCSRFProtection = True
 
-    fields = field.Fields(ITemplateaccountForm)
-    fields['captcha'].widgetFactory = ReCaptchaFieldWidget
+    schema=ITemplateaccountForm
 
     label = _(u"Hosting your Template(s) (Registration)")
     description = _(u"Please leave a short description of your template project below.")
@@ -157,9 +162,17 @@ class TemplatesiteaccountForm(form.Form):
             self.status = self.formErrorsMessage
             return
 
-        captcha = getMultiAdapter((aq_inner(self.context), self.request), name='recaptcha')
-        if captcha.verify():
-            print 'ReCaptcha validation passed.'
+        elif 'leaveblank' in data and data['leaveblank']:
+
+            urltool = getToolByName(self.context, 'portal_url')
+
+            portal = urltool.getPortalObject()
+
+            self.request.response.redirect(portal.absolute_url())
+            return
+
+        else:
+
             mailhost = getToolByName(self.context, 'MailHost')
             urltool = getToolByName(self.context, 'portal_url')
 
@@ -167,8 +180,8 @@ class TemplatesiteaccountForm(form.Form):
 
             # Construct and send a message
             toAddress = portal.getProperty('email_from_address')
-            source = "%s <%s>" % ('Asking for an Account on the template site', 'templates@otrs.documentfoundation.org')
-            subject = "%s %s" % (data['firstname'], data['name'])
+            source = "%s" % (data['emailAddress'])
+            subject = "%s  %s %s" % ('Asking for an Account on the LibreOffice Templates Site from', data['firstname'], data['name'])
             message = MESSAGE_TEMPLATE % data
 
             mailhost.send(message, mto=toAddress, mfrom=str(source), subject=subject, charset='utf8')
@@ -181,9 +194,8 @@ class TemplatesiteaccountForm(form.Form):
             # page body - we are redirecting anyway!
             self.request.response.redirect(portal.absolute_url())
             return ''
-        else:
-            print 'The code you entered was wrong, please enter the new one.'
-        return
+
+
 
 
 

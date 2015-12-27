@@ -130,7 +130,7 @@ class TemplatesiteaccountForm2(form.SchemaForm):
 
 
     grok.context(ISiteRoot)
-    grok.name('hosting-your-template')
+    grok.name('hosting-your-template2')
     grok.require('zope2.View')
 
     enableCSRFProtection = True
