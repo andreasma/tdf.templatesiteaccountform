@@ -40,7 +40,7 @@ Account Request from %(firstname)s %(name)s <%(emailAddress)s> for LibreOffice T
 Firstname: %(firstname)s
 Name: %(name)s
 Email: %(emailAddress)s
-Preferred Username: %(preferedusername)s
+Preferred Username: %(preferredusername)s
 
 
 
